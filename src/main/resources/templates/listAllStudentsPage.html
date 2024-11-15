@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<!--把html 的名称空间，改成：xmlns:th="http://www.thymeleaf.org" 会有语法提示-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>hello</title>
+</head>
+<body>
+    <table>
+        <tr th:each="student:${sysDepartmentList}">
+            <td th:text="${student.getId()}"></td>
+            <td th:text="${student.getDepartmentName()}"></td>
+            <td><label>
+                <input type="checkbox" th:id="${student.getId()}"/>
+            </label></td>
+        </tr>
+    </table>
+</body>
+</html>

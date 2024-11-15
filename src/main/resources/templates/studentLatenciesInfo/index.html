@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<!--把html 的名称空间，改成：xmlns:th="http://www.thymeleaf.org" 会有语法提示-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>迟到信息总览</title>
+    <script src="https://cdn.staticfile.net/jquery/2.0.0/jquery.min.js">
+    </script>
+</head>
+<body>
+<!--添加信息-->
+<div id="save_div">
+    <form action="/studentLatenciesInfo/addStudentLatenciesInfo" method="post">
+        学号：<input id="studentNo" type="text" name="studentNo"/><br>
+        姓名：<input id="studentName" type="text" name="studentName"/><br>
+        迟到次数：<input id="numberLatencies" type="text" name="numberLatencies"/><br>
+        <input type="submit" name="saveOrUpdate" value="保存"/>
+    </form>
+</div>
+<input id="randomNumber" type="text"><br>
+<button onclick="randomStudentLatenciesInfo()">随机抽取</button>
+<!--显示信息-->
+<table border="1" bordercolor="#FF9966">
+    <tr>
+        <td>id</td>
+        <td>学号</td>
+        <td>姓名</td>
+        <td>迟到次数</td>
+        <td>创建时间</td>
+        <td>更新时间</td>
+    </tr>
+    <tr th:each="studentLatenciesInfo:${studentLatenciesInfoList}">
+        <td th:text="${studentLatenciesInfo.getId()}"></td>
+        <td th:text="${studentLatenciesInfo.getStudentNo()}"></td>
+        <td th:text="${studentLatenciesInfo.getStudentName()}"></td>
+        <td><input th:id="${studentLatenciesInfo.getId()}+'_numberLatencies_input'" type="text" name="numberLatencies" th:value="${studentLatenciesInfo.getNumberLatencies()}"></td>
+        <td th:text="${studentLatenciesInfo.getCreateTime()}"></td>
+        <td th:text="${studentLatenciesInfo.getUpdateTime()}"></td>
+        <td>
+            <button th:onclick="updateStudentLatenciesInfo([[${studentLatenciesInfo.getId()}]])">修改</button>
+            <button th:onclick="deleteStudentLatenciesInfo([[${studentLatenciesInfo.getId()}]])">删除</button>
+        </td>
+    </tr>
+</table>
+<script>
+    //随机抽取n名幸运观众
+    function randomStudentLatenciesInfo(number) {
+        var number = prompt("请输入抽取人数");
+        $.ajax(
+            {
+                url: "/studentLatenciesInfo/randomStudentLatenciesInfo",
+                type: "post",
+                data: {
+                    number: number
+                },
+                success: function (data) {
+                    if (data == "success") {
+                        alert("抽取成功");
+                        window.location.reload();
+                    } else {
+                        alert("抽取失败");
+                    }
+                }
+            }
+        )
+    }
+    //修改迟到次数
+    function updateStudentLatenciesInfo(id) {
+        var numberLatencies = $("#" + id + "_numberLatencies_input").val();
+        console.log(numberLatencies);
+        $.ajax(
+            {
+                url: "/studentLatenciesInfo/updateStudentLatenciesInfo",
+                type: "post",
+                data: {
+                    id: id,
+                    numberLatencies: numberLatencies
+                },
+                success: function (data) {
+                    if (data == "success") {
+                        alert("修改成功");
+                        window.location.reload();
+                    } else {
+                        alert("修改失败");
+                    }
+                }
+            }
+        )
+    }
+    //删除
+    function deleteStudentLatenciesInfo(id) {
+        if (confirm("确定删除吗？")) {
+            $.ajax(
+                {
+                    url: "/studentLatenciesInfo/deleteStudentLatenciesInfo",
+                    type: "post",
+                    data: {
+                        id: id
+                    },
+                    success: function (data) {
+                        if (data == "success") {
+                            alert("删除成功");
+                            window.location.reload();
+                        } else {
+                            alert("删除失败");
+                        }
+                    }
+                }
+            )
+        }
+    }
+</script>
+</body>
+</html>
